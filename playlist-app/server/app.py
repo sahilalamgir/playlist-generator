@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from ../../main.ipynb import random_song
 
 app = Flask(__name__)
 CORS(app)
@@ -8,7 +9,7 @@ CORS(app)
 def handle_submit():
     data = request.get_json()
     mood = data.get("mood")
-    
+
     return jsonify({"message": mood})
 
 if __name__ == "__main__":
