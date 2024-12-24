@@ -1,0 +1,13 @@
+{
+    "name": "playlist-app-root",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+      "start": "concurrently \"npm run client\" \"npm run server\"",
+      "client": "npm start --prefix client",
+      "server": "cd server && FLASK_APP=app.py flask run --host=0.0.0.0 --port=5000"
+    },
+    "dependencies": {
+      "concurrently": "^9.1.0"
+    }
+  }
