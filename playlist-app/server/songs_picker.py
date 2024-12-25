@@ -25,8 +25,8 @@ for i in range(6):
 
 df["mood"] = df["cluster"].apply(lambda cluster: cluster_mood_dict[cluster])
 
-def random_song(mood):
-    return df[df["mood"] == mood].sample(1)["track_id"].iloc[0]
+def random_songs(mood):
+    return list(df[df["mood"] == mood].sample(20)["track_id"])
 
 # mood = input("What mood do you feel right now? (energetic, sad, nostalgic, romantic, chill, intense): ")
 # pd.DataFrame(random_song(mood))
