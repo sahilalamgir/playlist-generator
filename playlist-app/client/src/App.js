@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Button, Row, Card } from "react-bootstrap";
+import SpotifyPlayer from "react-spotify-web-playback";
 
 const CLIENT_ID = "95b30e78e5be4447b7502fa053575c29";
 const CLIENT_SECRET = "ac4c081390764e8aa49e5b557da4621d";
+// const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=http://localhost:3000/callback&scope=streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state`;
 
 export default function App() {
   const [accessToken, setAccessToken] = useState("");
@@ -12,18 +14,42 @@ export default function App() {
   const [playlist, setPlaylist] = useState([]);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    const authParameters = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: "grant_type=client_credentials&client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET
-    }
+  // const handleLogin = () => {
+  //   window.location.href = AUTH_URL;
+  // };
 
-    fetch("https://accounts.spotify.com/api/token", authParameters)
-      .then(result => result.json())
-      .then(data => setAccessToken(data.access_token));
+  useEffect(() => {
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const code = urlParams.get("code");
+
+    // if (code) {
+      const authParameters = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          grant_type: "client_credentials",
+          // code: code,
+          // redirect_uri: "http://localhost:3000/callback",
+          client_id: CLIENT_ID,
+          client_secret: CLIENT_SECRET
+        }).toString()
+      }
+
+      // console.log("Authorization code:", code);
+      // console.log("Authorization URL:", AUTH_URL);
+      console.log("Fetch parameters:", authParameters);
+  
+      fetch("https://accounts.spotify.com/api/token", authParameters)
+        .then(result => result.json())
+        .then(data => {
+          console.log(data);
+          setAccessToken(data.access_token);
+          // window.history.replaceState({}, document.title, "/");
+        })
+        // .catch(err => console.log("Token exchange error:", err));
+    // }
   }, []);
 
   const handleSelectChange = (e) => {
@@ -56,38 +82,49 @@ export default function App() {
 
   return (
     <div className="App">
-      <Container>
-        <h1>Playlist Generator</h1>
-        <select value={mood} onChange={handleSelectChange}>
-          <option value="" disabled>Select a mood</option>
-          <option value="energetic">Energetic</option>
-          <option value="sad">Sad</option>
-          <option value="nostalgic">Nostalgic</option>
-          <option value="romantic">Romantic</option>
-          <option value="chill">Chill</option>
-          <option value="intense">Intense</option>
-        </select>
-        <Button onClick={handleSubmit}>Submit</Button>
-      </Container>
-      <Container>
-        {error ? (
-          <p>Couldn't connect to Flask server.</p>
-        ) : (
-          <Row className="mx-2 row row-cols-4">
-            {playlist.map((track, i) => {
-              console.log(track);
-              return (
-                <Card>
-                  <Card.Img src={track.album.images[0].url} />
-                  <Card.Body>
-                    <Card.Title>{track.name} by {track.artists.map(artist => artist.name).join(", ")}</Card.Title>
-                  </Card.Body>
-                </Card>
-              )
-            })}
-          </Row>
-        )}
-      </Container>
+      {/* {!accessToken ? (
+        <button onClick={handleLogin}>Log in with Spotify</button>
+      ) : (
+        <div> */}
+          <Container className="my-4 text-center">
+            <h1>Playlist Generator</h1>
+            <select value={mood} onChange={handleSelectChange}>
+              <option value="" disabled>Select a mood</option>
+              <option value="energetic">Energetic</option>
+              <option value="sad">Sad</option>
+              <option value="nostalgic">Nostalgic</option>
+              <option value="romantic">Romantic</option>
+              <option value="chill">Chill</option>
+              <option value="intense">Intense</option>
+            </select>
+            <Button onClick={handleSubmit}>Submit</Button>
+          </Container>
+          <Container>
+            {error ? (
+              <p>Couldn't connect to Flask server.</p>
+            ) : (
+              <Row className="my-5 row row-cols-4">
+                {playlist.map((track, i) => {
+                  console.log(track);
+                  return (
+                    // <Card>
+                      
+                      <iframe
+                        className="my-1"
+                        src={`https://open.spotify.com/embed/track/${track.uri.split(":")[2]}`}
+                        width="250"
+                        height="352"
+                        frameBorder="0"
+                        allow="encrypted-media"
+                      ></iframe>
+                    
+                  )
+                })}
+              </Row>
+            )}
+          </Container>
+        {/* </div>
+      )} */}
     </div>
   );
 };
