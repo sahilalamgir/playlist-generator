@@ -3,8 +3,8 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, FormControl, InputGroup, Button, Row, Card } from "react-bootstrap";
 
-const CLIENT_ID = "95b30e78e5be4447b7502fa053575c29";
-const CLIENT_SECRET = "ac4c081390764e8aa49e5b557da4621d";
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
 const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=http://localhost:3000&scope=streaming%20user-read-email%20user-read-private%20user-read-playback-state%20user-modify-playback-state%20playlist-modify-public`;
 
 export default function App() {
@@ -87,51 +87,52 @@ export default function App() {
   };
 
   const createPlaylist = async () => {
-    console.log("my id", accessToken);
-    
-
-    const createPlaylistParameters = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({
-        name: playlistName,
-        description: playlistDescription
-      })
-    };
-    console.log(createPlaylistParameters);
-    console.log("IDDDDD:", userID);
-    fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, createPlaylistParameters)
-      .then(result => result.json())
-      .then(data => {
-        console.log(data)
-        setPlaylistID(data.id)
-
-        const addTracksParameters = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({
-            "uris": playlist.map(track => `spotify:track:${track}`)
-          })
-        };
-        fetch(`https://api.spotify.com/v1/playlists/${data.id}/tracks`, addTracksParameters)
-          .then(result => result.json())
-          .then(data => {
-            console.log(data)
-          })
-      }
-    );
+    console.log("my acctok", accessToken);
+    console.log(playlist)
+    if (playlist.length !== 0) {
+      const createPlaylistParameters = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          name: playlistName,
+          description: playlistDescription
+        })
+      };
+      console.log(createPlaylistParameters);
+      console.log("IDDDDD:", userID);
+      fetch(`https://api.spotify.com/v1/users/${userID}/playlists`, createPlaylistParameters)
+        .then(result => result.json())
+        .then(data => {
+          console.log(data)
+          setPlaylistID(data.id)
+  
+          const addTracksParameters = {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+              "uris": playlist.map(track => `spotify:track:${track}`)
+            })
+          };
+          fetch(`https://api.spotify.com/v1/playlists/${data.id}/tracks`, addTracksParameters)
+            .then(result => result.json())
+            .then(data => {
+              console.log(data)
+            })
+        }
+      );
+    }
   };
 
   return (
     <div className="App">
       {(!accessToken) ? (
-        <Button onClick={handleLogin}>Login with Spotify</Button>
+        <Button className="btn-success" onClick={handleLogin}>Login with Spotify</Button>
       ) : (
         <div>
           <Container className="my-4 text-center">

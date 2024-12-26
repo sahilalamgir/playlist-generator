@@ -37,6 +37,7 @@
     ]
   },
   "devDependencies": {
+    "dotenv": "^16.4.7",
     "web-vitals": "^4.2.4"
   }
 }

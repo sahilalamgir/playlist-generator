@@ -1,0 +1,27 @@
+# Ignore node_modules in both locations
+playlist-app/node_modules/
+playlist-app/client/node_modules/
+
+# Ignore .env files
+playlist-app/client/.env
+
+# Ignore build and coverage files
+playlist-app/build/
+playlist-app/coverage/
+
+# Ignore logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore editor and IDE settings
+.vscode/
+.idea/
+
+# Ignore dependency lock files if needed (optional)
+*.lock
